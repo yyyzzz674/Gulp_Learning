@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+@@include('../include/meta.html')
+
+<body>
+  @@include('../include/head.html')
+  <div id="container">
+    <script type="text/html" id="tplOrdertList">
+      {{each $data item index}}
+      <p class="">id:{{item.id}}</p>
+      <p>code:{{item.code}}</p>
+      <ul class="list">
+        {{each item.list value j}}
+          <li class="item">{{value.hospital}}</li>
+        {{/each}}
+      </ul>
+      {{/each}}
+    </script>
+  </div>
+
+  @@include('../include/foot.html')
+</body>
+
+</html>

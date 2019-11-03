@@ -1,0 +1,98 @@
+  //Usage: 不透明度opacity
+  //Example @include opacity(20)
+  @mixin opacity($opacity:50) {
+    opacity: $opacity / 100;
+    filter: alpha(opacity=$opacity);
+  }
+
+  //Usage: 截取文本text-overflow ，$substract`单位为% 
+  //Example @include singleline-ellipsis(20%)
+  @mixin singleline-ellipsis($substract:0) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100% - $substract;
+  }
+
+  //Usage:隐藏文字
+  //Example: @include hide-text;  
+  @mixin hide-text {
+    overflow: hidden;
+    text-indent: -9000px;
+    display: block;
+  }
+
+  %triangleBase {
+    _font-size: 0;
+    _line-height: 0;
+    _overflow: hidden;
+    width: 0;
+    height: 0;
+  }
+
+
+  //Usage: 正三角
+  //Example: @include regulaTriangle(top,red);  
+  @mixin regula-triangle($derection:bottom, $color: #000, $width: 10px) {
+    @extend %triangleBase;
+    border-width: $width;
+
+    //向右  
+    @if $derection==right {
+      border-style: dashed dashed dashed solid;
+      border-color: transparent transparent transparent $color;
+    }
+
+    //向左  
+    @if $derection==left {
+      border-style: dashed solid dashed dashed;
+      border-color: transparent $color transparent transparent;
+    }
+
+    //向上  
+    @if $derection==top {
+      border-style: dashed dashed solid dashed;
+      border-color: transparent transparent $color transparent;
+    }
+
+    //向下  
+    @if $derection==bottom {
+      border-style: solid dashed dashed dashed;
+      border-color: $color transparent transparent transparent;
+    }
+  }
+
+  //Usage:直角三角形
+  //Example：@include right-angledTriangle(1,red);  
+  @mixin right-triangle ($derection:bottom, $color:#000, $width: 10px, $opacity:transparent, $border:dashed) {
+    // @extend %triangleBase;
+    width: 0;
+    height: 0;
+    border-width: $width;
+
+    //向上  
+    @if $derection==top {
+      border-style: dashed $border $border dashed;
+      border-color: $opacity $color $color $opacity;
+    }
+
+    //向右  
+    @if $derection==right {
+      border-style: $border dashed dashed $border;
+      border-color: $color $opacity $opacity $color;
+    }
+
+    //向下  
+    @if $derection==bottom {
+      border-style: dashed dashed $border $border;
+      border-color: $opacity $opacity $color $color;
+    }
+
+    //向左  
+    @if $derection==left {
+      border-style: $border $border dashed dashed;
+      border-color: $color $color $opacity $opacity;
+    }
+
+
+  }
