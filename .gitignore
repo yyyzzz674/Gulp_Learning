@@ -108,3 +108,6 @@ dist
 # Install files
 package-lock.json
 yarn.lock
+
+# Install direction
+build
