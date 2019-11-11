@@ -1,8 +1,11 @@
 const gulp = require('gulp')
 
+/*************
+ Rollup 依赖
+ ************/
 const rollup = require('rollup') // js模块打包
-const babel = require('rollup-plugin-babel') // es6=>es5
-const eslint = require('rollup-plugin-eslint').eslint // 检查js
+const rollup_babel = require('rollup-plugin-babel') // es6=>es5
+const rollup_eslint = require('rollup-plugin-eslint').eslint // 检查js
 const commonjs = require('rollup-plugin-commonjs') // 导入commonjs库
 const resolve = require('rollup-plugin-node-resolve') // 导入第三方库
 // const builtins = require('rollup-plugin-node-builtins')
@@ -11,13 +14,25 @@ const json = require('@rollup/plugin-json') // 读取json文件
 // const replace = require('@rollup/plugin-replace') // 替换字符
 // const rename = require('gulp-rename')
 
+/*************
+ Browserify 依赖
+ ************/
+const sourcemaps = require('gulp-sourcemaps')
+const source = require('vinyl-source-stream')
+const buffer = require('vinyl-buffer')
+const browserify = require('browserify')
+
+/*************
+ Gulp 依赖
+ ************/
+
 const paths = {
   src: './src', // 源文件
   build: './build' // 打包文件
 }
 
 // js编译 使用rollup打包
-async function js() {
+async function rollupjs() {
   const inputOptions = {
     input: paths.src + '/js/index.js',
     plugins: [
@@ -26,10 +41,10 @@ async function js() {
       // globals(),
       // builtins(),
       json(),
-      babel({
+      rollup_babel({
         exclude: 'node_modules/**' // 排除node_modules下的文件
       }),
-      eslint({
+      rollup_eslint({
         throwOnError: true,
         throwOnWarning: true,
         include: [paths.src + '/**/*.js'],
@@ -55,6 +70,28 @@ async function js() {
     .pipe(gulp.dest(paths.build + '/js'))
 }
 
-exports.js = js
+// js编译 使用gulp、browserify打包
+function browserifyjs(done) {
+  let bundler = browserify(paths.src + '/js/index.js', {
+    debug: true
+  }).transform('babelify', {
+    presets: ['@babel/preset-env']
+  })
+  bundler
+    .bundle()
+    .on('error', function(err) {
+      console.error(err)
+      this.emit('end')
+    })
+    .pipe(source('index.js'))
+    .pipe(buffer())
+    .pipe(sourcemaps.init({ loadMaps: true }))
+    .pipe(sourcemaps.write('./'))
+    .pipe(gulp.dest(paths.build + '/js'))
+  done()
+}
 
-gulp.task('default', gulp.series(js))
+exports.rollupjs = rollupjs
+exports.browserifyjs = browserifyjs
+
+gulp.task('default', gulp.series(browserifyjs))
